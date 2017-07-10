@@ -48,48 +48,82 @@ describe('renderContent', function(){
 })
 
 
+// figure out how wide to make the table
+describe('get width', function(){
+  it('should determine the table width', function(){
+    expect(box.getWidth(
+      [
+        ['bob'],
+        ['jimmy']
+      ]
+    ,0)).to.equal(5)
+
+    expect(box.getWidth(
+      [
+        ['John Doe'],
+        ['Role', 'Software Engineer'],
+        ['Austin, Texas']
+      ], 6)).to.equal(34)
+
+    expect(box.getWidth(
+      [
+        ['Sam'],
+        ['Just a guy with a brick and a dream'],
+        ['Mason', 'Yardwork', 'Roofing']
+      ], 6)).to.equal(41)
+  })
+})
+
 describe('pad', function(){
-  it('should pad an array', function(){
-    /*                                         total: 33
-      │ John Doe                         │ char 8, r25 l1
-      │ Role     │ Software Engineer     │ inner: 34 (1 spacer)
-      │ Austin, Texas                    │ char 13, r20 l1
-
-      inner / 2 cols = +17 per col -> 34%17 === 0
-      inner / 3 cols = +11 -> 34%11 === 1
-
-    */
+  it('should pad each column in the table', function(){
     expect(box.pad(
       [
         ['John Doe'],
         ['Role', 'Software Engineer'],
         ['Austin, Texas']
-      ]
-    ))
-    .to.deep.equal(
-    [
-      [' John Doe                         '],
-      [' Role     ', ' Software Engineer     '],
-      [' Austin, Texas                    ']
-    ]);
-
-/*
-    │ Sam                                     │
-    │ Just a guy with a brick and a dream     │
-    │ Mason     │ Yardwork     │ Roofing      │
-*/
-    expect(box.pad(
+      ], 1, 5)
+    ).to.deep.equal(
       [
-        ['Sam'],
-        ['Just a guy with a brick and a dream'],
-        ['Mason', 'Yardwork', 'Roofing']
+        [' John Doe     '],
+        [' Role     ', ' Software Engineer     '],
+        [' Austin, Texas     ']
+      ]
+    )
+  })
+})
+
+
+describe('normal', function(){
+  it('should add additional necessary padding', function(){
+
+    expect(box.normal(
+      [
+        ['bob'],
+        ['jimmy']
       ]
     )).to.deep.equal(
       [
-        [' Sam                                     '],
-        [' Just a guy with a brick and a dream     '],
-        [' Mason     ', ' Yardwork     ', ' Roofing      ']
+        ['bob  '],
+        ['jimmy']
       ]
     )
+
+    /*
+      │bob│sam│chad|
+      │jimmy       │
+    */
+
+    expect(box.normal(
+      [
+        ['bob','sam','chad'],
+        ['jimmy']
+      ]
+    )).to.deep.equal(
+      [
+        ['bob','sam','chad'],
+        ['jimmy       ']
+      ]
+    )
+
   })
 })
