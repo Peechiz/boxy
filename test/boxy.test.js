@@ -75,7 +75,7 @@ describe('content preparation:', function() {
           ['Sam'],
           ['Just a guy with a brick and a dream'],
           ['Mason', 'Yardwork', 'Roofing']
-        ], 6)).to.equal(46)
+        ], 7)).to.equal(46)
 
     /*
       | Sam                                     |
