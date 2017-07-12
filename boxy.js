@@ -19,11 +19,11 @@
 
 let box = function(input, options) {
 
-  // if (typeof input === 'string') {
-  //   return handleString(input, options);
-  // } else if (Array.isArray(input) === true) {
-  //   return handleArray(input, options);
-  // }
+  if (typeof input === 'string') {
+    return handleString(input, options);
+  } else if (Array.isArray(input) === true) {
+    return handleArray(input, options);
+  }
 
 }
 
@@ -51,16 +51,60 @@ box.styles = {
 }
 
 box.defaults = {
-  outside: 'single',
+  style: 'single',
   rightPad: 5,
   leftPad: 1,
   padAllColumns: true
 }
 
+let handleArray = function(arr, options = box.defaults){
 
-box.renderLine = function(length, style, type) {
+  Object.keys(box.defaults).forEach(key => {
+    options[key] = options[key] || box.defaults[key]
+  })
+
+  options.padlvl = options.leftPad + options.rightPad;
+
+  options.width = box.getInnerWidth(arr, options.padlvl);
+
+  // prepare content
+  arr = box.prepare(arr, options);
+
+
+  arr = arr.map(row => {
+    return box.renderContent(row, options.style)
+  })
+
+  // build
+  let boxed = [];
+
+  boxed.push( box.renderLine(width, options.style, 'top') );
+
+  for (var i = 0; i < arr.length; i++) {
+    boxed.push(arr[i]);
+    boxed.push( box.renderLine(width, options.style, 'middle' ) );
+  }
+
+  boxed[boxed.length-1] = box.renderLine(width, options.style, 'bottom');
+
+  return box.buildString(boxed);
+}
+
+
+
+
+
+
+box.buildString = function(arr){
+  return arr.reduce((str,row)=>{
+    str += row + '\n'
+    return str
+  },'')
+}
+
+box.renderLine = function(width, style, type) {
   style = box.styles[style];
-  let inner = style.hr.repeat(length - 2);
+  let inner = style.hr.repeat(width);
 
   switch (type) {
     case 'top':
@@ -77,16 +121,16 @@ box.renderLine = function(length, style, type) {
 box.renderContent = function(arr, style) {
   style = box.styles[style];
 
-  return arr.reduce((str, item, index) => {
-    str = str + `${item}${style.vr}`;
+  return arr.reduce((str, row) => {
+    str = str + `${row}${style.vr}`;
     return str;
   }, style.vr)
 }
 
 // padlvl === left pad + right pad
-box.getWidth = function(arr, padlvl) {
+box.getInnerWidth = function(arr, padlvl) {
 
-  let width = arr.reduce((target, row) => {
+  return arr.reduce((target, row) => {
     let len = size(row); // number of characters
     let spacers = row.length - 1;
     let paddedLength = len + spacers + (padlvl * row.length)
@@ -97,8 +141,6 @@ box.getWidth = function(arr, padlvl) {
     return target
 
   }, 0)
-
-  return width;
 }
 
 function size(arr) {
@@ -107,17 +149,29 @@ function size(arr) {
   }, 0);
 }
 
-box.pad = function(arr, left, right) {
-  leftpad = ' '.repeat(left)
-  rightpad = ' '.repeat(right)
+box.prepare = function(arr, options){
+  // pad
+  arr = box.pad(arr, options)
+
+  // normalize
+  arr = box.normal(arr, options);
+
+  return arr;
+}
+
+box.pad = function(arr, options) {
+  const leftpad = ' '.repeat(options.leftPad);
+  const rightpad = ' '.repeat(options.rightPad);
   return arr.map(row => {
     return row.map(col => leftpad + col + rightpad)
   })
 }
 
-box.normal = function(arr) {
-  padlvl = (arr[0][0].match(/\s/g) || []).length
-  let width = box.getWidth(arr, padlvl);
+box.normal = function(arr, options) {
+
+  let width = box.getInnerWidth(arr, options.padlvl)
+
+  // console.log(width);
 
   function crawlArray(array, index, n) {
     return ((index + n) % array.length + array.length) % array.length;
