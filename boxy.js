@@ -78,14 +78,14 @@ let handleArray = function(arr, options = box.defaults){
   // build
   let boxed = [];
 
-  boxed.push( box.renderLine(width, options.style, 'top') );
+  boxed.push( box.renderLine(options.width, options.style, 'top') );
 
   for (var i = 0; i < arr.length; i++) {
     boxed.push(arr[i]);
-    boxed.push( box.renderLine(width, options.style, 'middle' ) );
+    boxed.push( box.renderLine(options.width, options.style, 'middle' ) );
   }
 
-  boxed[boxed.length-1] = box.renderLine(width, options.style, 'bottom');
+  boxed[boxed.length-1] = box.renderLine(options.width, options.style, 'bottom');
 
   return box.buildString(boxed);
 }
@@ -167,11 +167,21 @@ box.pad = function(arr, options) {
   })
 }
 
-box.normal = function(arr, options) {
+box.normal = function(arr) {
 
-  let width = box.getInnerWidth(arr, options.padlvl)
+  // at this point we don't care about padding
+  // and also, we don't want to have to pass options to
+  // the normalization function because why
+  // would we ever need to do that
+  let width = arr.reduce((longest,row)=>{
+    let rowlen = size(row);
+    let spacers = row.length - 1;
 
-  // console.log(width);
+    if ((rowlen + spacers)  > longest){
+      longest = rowlen + spacers;
+    }
+    return longest;
+  },0)
 
   function crawlArray(array, index, n) {
     return ((index + n) % array.length + array.length) % array.length;
