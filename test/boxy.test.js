@@ -63,11 +63,10 @@ describe('content preparation:', function() {
           ['Role', 'Software Engineer'],
           ['Austin, Texas']
         ], 6)).to.equal(34)
-
     /*
-      | Sam                                          |
-      | Just a guy with a brick and a dream          |
-      | Mason       | Yardwork       | Roofing       |
+    | Sam                                     |
+    | Just a guy with a brick and a dream     |
+    | Mason     | Yardwork     | Roofing      |
     */
 
       expect(box.getInnerWidth(
@@ -75,12 +74,12 @@ describe('content preparation:', function() {
           ['Sam'],
           ['Just a guy with a brick and a dream'],
           ['Mason', 'Yardwork', 'Roofing']
-        ], 7)).to.equal(46)
+        ], 8)).to.equal(46)
 
     /*
-      | Sam                                     |
-      | Just a guy with a brick and a dream     |
-      | Mason     | Yardwork     | Roofing      |
+    | Sam                                          |
+    | Just a guy with a brick and a dream          |
+    | Mason       | Yardwork       | Roofing       |
     */
 
       expect(box.getInnerWidth(
@@ -219,10 +218,10 @@ describe('content preparation:', function() {
           ['  jimmy  ']
         ]
       )
-      expect(box.prepare(arr1, options2)).to.deep.equal(
+      expect(box.prepare(arr2, options2)).to.deep.equal(
         [
-          [' jon       '],
-          [' steven    ']
+          [' jon        '],
+          [' steven     ']
         ]
       )
 
